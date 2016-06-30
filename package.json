@@ -1,0 +1,16 @@
+{
+  "name": "react-leaderboard",
+  "version": "1.0.0",
+  "description": "leaderboard example",
+  "main": "index.js",
+  "dependencies": {
+    "hapi": "^13.4.1",
+    "node": "^0.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ben Johnston",
+  "license": "ISC"
+}
