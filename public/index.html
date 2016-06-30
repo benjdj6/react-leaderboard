@@ -1,1 +1,105 @@
-Hello World!
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<title>Leaderboard Thing</title>
+    	<!-- Not present in the tutorial. Just for basic styling. -->
+    	<!--link rel="stylesheet" href="css/base.css" /-->
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.js"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.js"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
+  	</head>
+  	<body>
+  		<div id="content"></div>
+		<script type="text/babel">
+			var FilteredTable = React.createClass({
+    			render: function() {
+        			var _self = this;
+
+        			var thead = React.DOM.thead({},
+			            React.DOM.tr({},
+			                this.props.cols.map(function (col) {
+			                    return React.DOM.th({}, col);
+			            })));
+
+			        var tbody = this.props.rows.map(function (row) {
+			            return React.DOM.tr({},
+			            _self.props.cols.map(function (col) {
+			                return React.DOM.td({}, row[col] || "");
+			            }));
+			        });
+
+			        return React.DOM.table({}, [thead, tbody]);
+			    }
+
+			});
+
+			var Filters = React.createClass({
+				render: function() {
+					return (
+			    		<form>
+			        		<select>
+			        			<option value="" defaultValue>Select A School</option>
+			        		</select>
+			      		</form>
+			    	);
+			  	}
+			});
+
+			var LeaderBoard = React.createClass({
+				loadData: function() {
+					$.ajax({
+						url: this.props.url,
+						dataType: 'json',
+						cache: false,
+						success: function(data) {
+							this.setState({data: data});
+						}.bind(this),
+						error: function(xhr, status, err) {
+							console.error(this.props.url, status, err.toString());
+						}.bind(this)
+					});
+				},
+
+				getInitialState: function(){
+					return {data: {
+						cols: [],
+						rows: []
+					}};
+				},
+
+				componentDidMount: function() {
+          			this.loadData();
+          			this.getFilterOptions();
+        		},
+
+        		getFilterOptions: function() {
+					var temp = this.state.data.rows;
+					var schools = [];
+					for(var i = 0; i < temp.length; i++){
+						schools[i] = temp[i].university;
+					}
+					console.debug(schools);
+					this.state.filterOptions = schools;
+				},
+
+				render: function() {
+					return(
+						<div className="LeaderBoard">
+							<h1>Leader Board</h1>
+							<Filters options={this.state.filterOptions}/>
+							<FilteredTable cols={this.state.data.cols} rows={this.state.data.rows}/>
+						</div>
+					);
+				}
+			});
+
+			ReactDOM.render(
+		        <LeaderBoard url="/leaderboard"/>,
+		        document.getElementById('content')
+		    );
+		</script>
+	</body>
+</html>
